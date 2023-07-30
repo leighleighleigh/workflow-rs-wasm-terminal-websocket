@@ -258,7 +258,14 @@ pub async fn main() -> Result<(), String> {
     let cli_ = Arc::clone(&cli);
     let term = Arc::new(Terminal::try_new(cli_, "$ ")?);
     term.init().await?;
-    term.writeln("Terminal example (type 'help' for list of commands)");
+
+    cfg_if! {
+        if #[cfg(not(feature = "hacking"))] {
+            term.writeln("Terminal example (type 'help' for list of commands)");
+        } else {
+            term.writeln("HACKER MODE ENGAGED (type 'help' for list of commands)");
+        }
+    }
 
     // set logging and shot it in the terminal
     workflow_log::pipe(Some(cli.clone()));
