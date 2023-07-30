@@ -5,19 +5,20 @@ use std::{sync::Arc, time::Duration};
 // use workflow_html::{Render,html};
 use async_trait::async_trait;
 use std::sync::Mutex;
+use cfg_if::cfg_if;
 
 
-#[cfg(feature = "release")]
-use workflow_rs::log as workflow_log;
-#[cfg(feature = "release")]
-use workflow_rs::core as workflow_core;
-#[cfg(feature = "release")]
-use workflow_rs::websocket as workflow_websocket;
-#[cfg(feature = "release")]
-use workflow_rs::terminal as workflow_terminal;
+cfg_if! {
+ if #[cfg(not(feature = "hacking"))] {
+    use workflow_rs::log as workflow_log;
+    use workflow_rs::core as workflow_core;
+    use workflow_rs::websocket as workflow_websocket;
+    use workflow_rs::terminal as workflow_terminal;
+ }
+}
 
-use workflow_terminal::{Terminal,parse,Cli,Result as WResult};
 use workflow_log::*;
+use workflow_terminal::{Terminal,parse,Cli,Result as WResult};
 use workflow_websocket::client::{Message, Options, WebSocket, ConnectOptions};
 
 struct ExampleCli {

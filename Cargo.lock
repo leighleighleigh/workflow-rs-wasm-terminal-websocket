@@ -1978,7 +1978,7 @@ dependencies = [
 [[package]]
 name = "workflow-core"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "async-channel",
  "async-std",
@@ -2019,7 +2019,7 @@ dependencies = [
 [[package]]
 name = "workflow-core-macros"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "convert_case",
  "parse-variants",
@@ -2050,7 +2050,7 @@ dependencies = [
 [[package]]
 name = "workflow-dom"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "futures",
  "js-sys",
@@ -2081,7 +2081,7 @@ dependencies = [
 [[package]]
 name = "workflow-log"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "cfg-if",
  "console",
@@ -2107,7 +2107,7 @@ dependencies = [
 [[package]]
 name = "workflow-macro-tools"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "convert_case",
  "parse-variants",
@@ -2128,7 +2128,7 @@ dependencies = [
 [[package]]
 name = "workflow-panic-hook"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "cfg-if",
  "wasm-bindgen",
@@ -2138,7 +2138,7 @@ dependencies = [
 [[package]]
 name = "workflow-rs"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
  "workflow-log 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
@@ -2153,6 +2153,7 @@ name = "workflow-rs-terminal-websocket-wasm"
 version = "0.0.1"
 dependencies = [
  "async-trait",
+ "cfg-if",
  "console_error_panic_hook",
  "wasm-bindgen",
  "wasm-bindgen-futures",
@@ -2180,7 +2181,7 @@ dependencies = [
 [[package]]
 name = "workflow-task"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "futures",
  "thiserror",
@@ -2205,7 +2206,7 @@ dependencies = [
 [[package]]
 name = "workflow-task-macros"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "convert_case",
  "parse-variants",
@@ -2246,7 +2247,7 @@ dependencies = [
 [[package]]
 name = "workflow-terminal"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "async-std",
  "async-trait",
@@ -2287,7 +2288,7 @@ dependencies = [
 [[package]]
 name = "workflow-terminal-macros"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "convert_case",
  "parse-variants",
@@ -2321,7 +2322,7 @@ dependencies = [
 [[package]]
 name = "workflow-wasm"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "cfg-if",
  "faster-hex",
@@ -2353,7 +2354,7 @@ dependencies = [
 [[package]]
 name = "workflow-wasm-macros"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "js-sys",
  "proc-macro-error",
@@ -2392,7 +2393,7 @@ dependencies = [
 [[package]]
 name = "workflow-websocket"
 version = "0.3.17"
-source = "git+https://github.com/leighleighleigh/workflow-rs#b1daec2ab3f0e701bb47267f57ba7640a8329729"
+source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "ahash 0.8.3",
  "async-std",

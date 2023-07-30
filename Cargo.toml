@@ -22,6 +22,7 @@ workflow-panic-hook = { path = "/home/leigh/GitHub/workflow-rs/panic-hook" , opt
 workflow-terminal = { path = "/home/leigh/GitHub/workflow-rs/terminal" , optional = true}
 workflow-websocket = { path = "/home/leigh/GitHub/workflow-rs/websocket" , optional = true}
 workflow-wasm = { path = "/home/leigh/GitHub/workflow-rs/wasm" , optional = true}
+cfg-if = "1.0.0"
 
 [features]
 default = ["dep:workflow-rs"]
