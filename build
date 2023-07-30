@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# wasm-pack build --target web --out-name workflow-terminal --out-dir root/workflow-terminal
+
+# use bacon now!
+# bacon
+
+# ...use mprocs now!
+mprocs

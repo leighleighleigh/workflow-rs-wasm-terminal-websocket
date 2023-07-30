@@ -1,0 +1,28 @@
+[package]
+name = "workflow-rs-terminal-websocket-wasm"
+publish = false
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+async-trait = "0.1.72"
+console_error_panic_hook = "0.1.7"
+wasm-bindgen = "0.2.87"
+wasm-bindgen-futures = "0.4.37"
+web-sys = { version = "0.3.64", features = ["Document", "Element", "Text", "Window"] }
+workflow-async-trait = "0.1.68"
+
+workflow-rs = { git = "https://github.com/leighleighleigh/workflow-rs", features = ["terminal", "wasm", "websocket", "log", "panic-hook"], optional = true}
+workflow-core = { path = "/home/leigh/GitHub/workflow-rs/core" , optional = true}
+workflow-log = { path = "/home/leigh/GitHub/workflow-rs/log" , optional = true}
+workflow-panic-hook = { path = "/home/leigh/GitHub/workflow-rs/panic-hook" , optional = true}
+workflow-terminal = { path = "/home/leigh/GitHub/workflow-rs/terminal" , optional = true}
+workflow-websocket = { path = "/home/leigh/GitHub/workflow-rs/websocket" , optional = true}
+workflow-wasm = { path = "/home/leigh/GitHub/workflow-rs/wasm" , optional = true}
+
+[features]
+default = ["dep:workflow-core", "dep:workflow-log", "dep:workflow-panic-hook", "dep:workflow-terminal", "dep:workflow-websocket", "dep:workflow-wasm"]
+release = ["dep:workflow-rs"]
