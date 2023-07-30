@@ -24,5 +24,5 @@ workflow-websocket = { path = "/home/leigh/GitHub/workflow-rs/websocket" , optio
 workflow-wasm = { path = "/home/leigh/GitHub/workflow-rs/wasm" , optional = true}
 
 [features]
-default = ["dep:workflow-core", "dep:workflow-log", "dep:workflow-panic-hook", "dep:workflow-terminal", "dep:workflow-websocket", "dep:workflow-wasm"]
-release = ["dep:workflow-rs"]
+default = ["dep:workflow-rs"]
+hacking = ["dep:workflow-core", "dep:workflow-log", "dep:workflow-panic-hook", "dep:workflow-terminal", "dep:workflow-websocket", "dep:workflow-wasm"]
