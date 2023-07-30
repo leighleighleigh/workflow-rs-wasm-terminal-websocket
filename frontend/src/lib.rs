@@ -7,6 +7,14 @@ use async_trait::async_trait;
 use std::sync::Mutex;
 use cfg_if::cfg_if;
 
+use serde::{Serialize,Deserialize};
+extern crate serde_json;
+
+#[derive(Clone,Debug,Serialize,Deserialize)]
+struct CommandResult {
+    pub stdout : String,
+    pub exit_status : u32,
+}
 
 cfg_if! {
  if #[cfg(not(feature = "hacking"))] {
@@ -298,8 +306,22 @@ pub async fn main() -> Result<(), String> {
                     log_error!("Websocket disconnected");
                     break;
                 }
-                let message = ws_.recv().await.unwrap();
-                log_info!("◁ receiving message: {:?}", message);
+                let message : Message = ws_.recv().await.unwrap();
+
+                match message {
+                    Message::Text(_) => {
+                        let msg_bytes : Vec<u8> = message.into();
+                        let msg_str = String::from_utf8(msg_bytes).unwrap();
+                        // convert this string (JSON) into a CommandResult
+                        let result : CommandResult = serde_json::from_str(&msg_str).unwrap();
+                        log_info!("◁ {:?}", result);
+                    },
+                    _ => {
+                        log_debug!("◁ {:?}", message);
+                    }
+                }
+                // let msg_str = message.try_into().unwrap();
+                // log_info!("◁ {}", msg_str);
             }
         }
     });

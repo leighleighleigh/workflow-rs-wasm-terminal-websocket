@@ -23,6 +23,8 @@ workflow-terminal = { path = "/home/leigh/GitHub/workflow-rs/terminal" , optiona
 workflow-websocket = { path = "/home/leigh/GitHub/workflow-rs/websocket" , optional = true}
 workflow-wasm = { path = "/home/leigh/GitHub/workflow-rs/wasm" , optional = true}
 cfg-if = "1.0.0"
+serde_json = "1.0.104"
+serde = { version = "1.0.178", default-features = false }
 
 [features]
 default = ["dep:workflow-rs"]

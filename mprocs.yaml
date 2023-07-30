@@ -1,9 +1,15 @@
 procs:
   bacon:
     shell: "bacon"
+    cwd: "frontend"
   http:
     shell: "http ./root/"
+    cwd: "frontend"
   ws-echo:
     shell: "websocat -t ws-l:127.0.0.1:9090 broadcast:mirror: -E"
-  ws-ssh-bridge:
-    shell: "websocat --binary ws-l:127.0.0.1:8022 tcp:127.0.0.1:22"
+    cwd: "frontend"
+  bacon-backend:
+    shell: "bacon"
+    cwd: "backend"
+    env:
+      RUST_LOG: info
