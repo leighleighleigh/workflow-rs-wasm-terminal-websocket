@@ -6,10 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.72"
 async-ssh2-tokio = { version = "0.7.0", features = ["openssl"] }
+async-trait = "0.1.72"
 env_logger = "0.10.0"
 futures-util = "0.3.28"
 log = "0.4.19"
+russh = { version = "0.37.1", default-features = false, features = ["flate2"] }
+russh-keys = "0.37.1"
 serde = { version = "1.0.178", features = ["derive"] }
 serde_json = "1.0.104"
 tokio = { version = "1.29.1", features = ["rt", "full"] }
