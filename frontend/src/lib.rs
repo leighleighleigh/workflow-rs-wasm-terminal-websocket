@@ -4,30 +4,26 @@ use wasm_bindgen::prelude::*;
 use std::{sync::Arc, time::Duration};
 // use workflow_html::{Render,html};
 use async_trait::async_trait;
-use std::sync::Mutex;
 use cfg_if::cfg_if;
+use std::sync::Mutex;
 
-use serde::{Serialize,Deserialize};
+use serde::{Deserialize, Serialize};
 extern crate serde_json;
 
-#[derive(Clone,Debug,Serialize,Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 struct CommandResult {
-    pub stdout : String,
-    pub exit_status : u32,
+    pub stdout: String,
+    pub exit_status: u32,
 }
 
-cfg_if! {
- if #[cfg(not(feature = "hacking"))] {
-    use workflow_rs::log as workflow_log;
-    use workflow_rs::core as workflow_core;
-    use workflow_rs::websocket as workflow_websocket;
-    use workflow_rs::terminal as workflow_terminal;
- }
-}
+use workflow_rs::core as workflow_core;
+use workflow_rs::log as workflow_log;
+use workflow_rs::terminal as workflow_terminal;
+use workflow_rs::websocket as workflow_websocket;
 
 use workflow_log::*;
-use workflow_terminal::{Terminal,parse,Cli,Result as WResult};
-use workflow_websocket::client::{Message, Options, WebSocket, ConnectOptions};
+use workflow_terminal::{parse, Cli, Result as WResult, Terminal};
+use workflow_websocket::client::{ConnectOptions, Message, Options, WebSocket};
 
 struct ExampleCli {
     term: Arc<Mutex<Option<Arc<Terminal>>>>,
@@ -77,18 +73,19 @@ impl ExampleCli {
         self.disconnect().await;
 
         // make a websocket connection
-        let ws : Option<WebSocket> = match WebSocket::new(&format!("ws://{}:{}", ip, port), Options::default(), None) {
-            Ok(ws) => {
-                log_info!("Websocket created");
-                Some(ws)
-            }
-            Err(err) => {
-                log_error!("Error creating websocket: {}", err);
-                None
-            }
-        };
+        let ws: Option<WebSocket> =
+            match WebSocket::new(&format!("ws://{}:{}", ip, port), Options::default(), None) {
+                Ok(ws) => {
+                    log_info!("Websocket created");
+                    Some(ws)
+                }
+                Err(err) => {
+                    log_error!("Error creating websocket: {}", err);
+                    None
+                }
+            };
 
-        let ws : WebSocket = ws.unwrap();
+        let ws: WebSocket = ws.unwrap();
 
         match ws.connect(ConnectOptions::default()).await {
             Ok(_) => {
@@ -181,7 +178,7 @@ impl Cli for ExampleCli {
                 // collect all the following arguments
                 let ip = argv[1].clone();
                 let port = argv[2].parse::<u16>().unwrap();
-                
+
                 // connect!
                 self.connect(&ip, port).await;
             }
@@ -208,9 +205,9 @@ impl Cli for ExampleCli {
 
                 // collect all the following arguments
                 let msg = argv[1..].join(" ");
-                
+
                 // send it!
-                match  ws_.send(Message::Text(msg.clone())).await {
+                match ws_.send(Message::Text(msg.clone())).await {
                     Ok(_) => {
                         log_info!("▷ {msg}");
                     }
@@ -259,7 +256,7 @@ impl Cli for ExampleCli {
 pub async fn main() -> Result<(), String> {
     console_error_panic_hook::set_once();
 
-    // setup a terminal as a log sink 
+    // setup a terminal as a log sink
     let cli = Arc::new(ExampleCli::new());
 
     // clone the cli sink, and move it into the task to create the terminal
@@ -306,16 +303,16 @@ pub async fn main() -> Result<(), String> {
                     log_error!("Websocket disconnected");
                     break;
                 }
-                let message : Message = ws_.recv().await.unwrap();
+                let message: Message = ws_.recv().await.unwrap();
 
                 match message {
                     Message::Text(_) => {
-                        let msg_bytes : Vec<u8> = message.into();
+                        let msg_bytes: Vec<u8> = message.into();
                         let msg_str = String::from_utf8(msg_bytes).unwrap();
                         // convert this string (JSON) into a CommandResult
-                        let result : CommandResult = serde_json::from_str(&msg_str).unwrap();
+                        let result: CommandResult = serde_json::from_str(&msg_str).unwrap();
                         log_info!("◁ {:?}", result);
-                    },
+                    }
                     _ => {
                         log_debug!("◁ {:?}", message);
                     }

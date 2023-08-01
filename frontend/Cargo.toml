@@ -14,18 +14,9 @@ wasm-bindgen = "0.2.87"
 wasm-bindgen-futures = "0.4.37"
 web-sys = { version = "0.3.64", features = ["Document", "Element", "Text", "Window"] }
 workflow-async-trait = "0.1.68"
-
-workflow-rs = { git = "https://github.com/leighleighleigh/workflow-rs", features = ["terminal", "wasm", "websocket", "log", "panic-hook"], optional = true}
-workflow-core = { path = "/home/leigh/GitHub/workflow-rs/core" , optional = true}
-workflow-log = { path = "/home/leigh/GitHub/workflow-rs/log" , optional = true}
-workflow-panic-hook = { path = "/home/leigh/GitHub/workflow-rs/panic-hook" , optional = true}
-workflow-terminal = { path = "/home/leigh/GitHub/workflow-rs/terminal" , optional = true}
-workflow-websocket = { path = "/home/leigh/GitHub/workflow-rs/websocket" , optional = true}
-workflow-wasm = { path = "/home/leigh/GitHub/workflow-rs/wasm" , optional = true}
 cfg-if = "1.0.0"
 serde_json = "1.0.104"
 serde = { version = "1.0.178", default-features = false }
 
-[features]
-default = ["dep:workflow-rs"]
-hacking = ["dep:workflow-core", "dep:workflow-log", "dep:workflow-panic-hook", "dep:workflow-terminal", "dep:workflow-websocket", "dep:workflow-wasm"]
+# Custom fork of workflow-rs, where I'm hacking things up
+workflow-rs = { git = "https://github.com/leighleighleigh/workflow-rs", features = ["terminal", "wasm", "websocket", "log", "panic-hook"]}

@@ -1969,32 +1969,6 @@ dependencies = [
 [[package]]
 name = "workflow-core"
 version = "0.3.17"
-dependencies = [
- "async-channel",
- "async-std",
- "borsh",
- "bs58",
- "cfg-if",
- "dirs",
- "futures",
- "getrandom",
- "instant",
- "js-sys",
- "rand",
- "serde",
- "serde-wasm-bindgen",
- "thiserror",
- "tokio",
- "triggered",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "workflow-async-trait",
- "workflow-core-macros 0.3.17",
-]
-
-[[package]]
-name = "workflow-core"
-version = "0.3.17"
 source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "async-channel",
@@ -2016,21 +1990,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "workflow-async-trait",
- "workflow-core-macros 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-core-macros"
-version = "0.3.17"
-dependencies = [
- "convert_case",
- "parse-variants",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "sha2",
- "syn 1.0.109",
- "workflow-macro-tools 0.3.17",
+ "workflow-core-macros",
 ]
 
 [[package]]
@@ -2045,23 +2005,7 @@ dependencies = [
  "quote",
  "sha2",
  "syn 1.0.109",
- "workflow-macro-tools 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-dom"
-version = "0.3.17"
-dependencies = [
- "futures",
- "js-sys",
- "regex",
- "thiserror",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "workflow-core 0.3.17",
- "workflow-log 0.3.17",
- "workflow-wasm 0.3.17",
+ "workflow-macro-tools",
 ]
 
 [[package]]
@@ -2076,23 +2020,9 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-log 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-wasm 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-log"
-version = "0.3.17"
-dependencies = [
- "cfg-if",
- "console",
- "downcast",
- "hexplay",
- "lazy_static",
- "log",
- "termcolor",
- "wasm-bindgen",
+ "workflow-core",
+ "workflow-log",
+ "workflow-wasm",
 ]
 
 [[package]]
@@ -2113,17 +2043,6 @@ dependencies = [
 [[package]]
 name = "workflow-macro-tools"
 version = "0.3.17"
-dependencies = [
- "convert_case",
- "parse-variants",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "workflow-macro-tools"
-version = "0.3.17"
 source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
  "convert_case",
@@ -2131,15 +2050,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "workflow-panic-hook"
-version = "0.3.17"
-dependencies = [
- "cfg-if",
- "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]
@@ -2157,12 +2067,12 @@ name = "workflow-rs"
 version = "0.3.17"
 source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39755030d9cb41a372c1b8d"
 dependencies = [
- "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-log 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-panic-hook 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-terminal 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-wasm 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-websocket 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
+ "workflow-core",
+ "workflow-log",
+ "workflow-panic-hook",
+ "workflow-terminal",
+ "workflow-wasm",
+ "workflow-websocket",
 ]
 
 [[package]]
@@ -2178,23 +2088,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "workflow-async-trait",
- "workflow-core 0.3.17",
- "workflow-log 0.3.17",
- "workflow-panic-hook 0.3.17",
  "workflow-rs",
- "workflow-terminal 0.3.17",
- "workflow-wasm 0.3.17",
- "workflow-websocket 0.3.17",
-]
-
-[[package]]
-name = "workflow-task"
-version = "0.3.17"
-dependencies = [
- "futures",
- "thiserror",
- "workflow-core 0.3.17",
- "workflow-task-macros 0.3.17",
 ]
 
 [[package]]
@@ -2204,22 +2098,8 @@ source = "git+https://github.com/leighleighleigh/workflow-rs#6c984a2f6b2f2691c39
 dependencies = [
  "futures",
  "thiserror",
- "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-task-macros 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-task-macros"
-version = "0.3.17"
-dependencies = [
- "convert_case",
- "parse-variants",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "sha2",
- "syn 1.0.109",
- "workflow-macro-tools 0.3.17",
+ "workflow-core",
+ "workflow-task-macros",
 ]
 
 [[package]]
@@ -2234,33 +2114,7 @@ dependencies = [
  "quote",
  "sha2",
  "syn 1.0.109",
- "workflow-macro-tools 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-terminal"
-version = "0.3.17"
-dependencies = [
- "async-std",
- "async-trait",
- "cfg-if",
- "crossterm",
- "downcast",
- "futures",
- "js-sys",
- "numtoa",
- "nw-sys",
- "regex",
- "textwrap",
- "thiserror",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "workflow-core 0.3.17",
- "workflow-dom 0.3.17",
- "workflow-log 0.3.17",
- "workflow-terminal-macros 0.3.17",
- "workflow-wasm 0.3.17",
+ "workflow-macro-tools",
 ]
 
 [[package]]
@@ -2283,25 +2137,11 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-dom 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-log 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-terminal-macros 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-wasm 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-terminal-macros"
-version = "0.3.17"
-dependencies = [
- "convert_case",
- "parse-variants",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "sha2",
- "syn 1.0.109",
- "workflow-macro-tools 0.3.17",
+ "workflow-core",
+ "workflow-dom",
+ "workflow-log",
+ "workflow-terminal-macros",
+ "workflow-wasm",
 ]
 
 [[package]]
@@ -2316,26 +2156,7 @@ dependencies = [
  "quote",
  "sha2",
  "syn 1.0.109",
- "workflow-macro-tools 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-wasm"
-version = "0.3.17"
-dependencies = [
- "cfg-if",
- "faster-hex",
- "futures",
- "js-sys",
- "serde",
- "serde-wasm-bindgen",
- "thiserror",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "workflow-core 0.3.17",
- "workflow-log 0.3.17",
- "workflow-panic-hook 0.3.17",
- "workflow-wasm-macros 0.3.17",
+ "workflow-macro-tools",
 ]
 
 [[package]]
@@ -2352,22 +2173,10 @@ dependencies = [
  "thiserror",
  "wasm-bindgen",
  "wasm-bindgen-futures",
- "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-log 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-panic-hook 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-wasm-macros 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
-]
-
-[[package]]
-name = "workflow-wasm-macros"
-version = "0.3.17"
-dependencies = [
- "js-sys",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
- "wasm-bindgen",
+ "workflow-core",
+ "workflow-log",
+ "workflow-panic-hook",
+ "workflow-wasm-macros",
 ]
 
 [[package]]
@@ -2381,32 +2190,6 @@ dependencies = [
  "quote",
  "syn 1.0.109",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "workflow-websocket"
-version = "0.3.17"
-dependencies = [
- "ahash 0.8.3",
- "async-std",
- "async-trait",
- "cfg-if",
- "downcast-rs",
- "futures",
- "futures-util",
- "js-sys",
- "thiserror",
- "tokio",
- "tokio-tungstenite",
- "triggered",
- "tungstenite",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "workflow-core 0.3.17",
- "workflow-log 0.3.17",
- "workflow-task 0.3.17",
- "workflow-wasm 0.3.17",
 ]
 
 [[package]]
@@ -2430,8 +2213,8 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "workflow-core 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-log 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-task 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
- "workflow-wasm 0.3.17 (git+https://github.com/leighleighleigh/workflow-rs)",
+ "workflow-core",
+ "workflow-log",
+ "workflow-task",
+ "workflow-wasm",
 ]
