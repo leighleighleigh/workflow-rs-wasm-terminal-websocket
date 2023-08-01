@@ -51,7 +51,7 @@ async fn handle_websocket_connection(stream: TcpStream) {
     let mut ws_stream = accept_hdr_async(stream, callback).await.expect("Error during the websocket handshake occurred");
 
     // start the SSH session, which goes to the echo server for now
-    let host = "127.0.0.1:22";
+    let host = "127.0.0.1:9922";
     let key = "./assets/id_rsa_testing";
 
     info!("Connecting to {host}");
@@ -65,7 +65,18 @@ async fn handle_websocket_connection(stream: TcpStream) {
     // ssh.close().await?;
 
     // get the channel streams
-    let mut ssh_channel = ssh_sesh.get_channel().await.unwrap();
+    let mut ssh_channel = match ssh_sesh.get_channel().await {
+        Ok(sesh) => 
+        {
+            sesh
+        }
+        Err(err) => 
+        {
+            // Tell websocket about this error
+            ws_stream.send(Message::Text("SSH connection error".to_string())).await.unwrap();
+            return;
+        }
+    };
 
     // spawn a tokio task
     tokio::task::spawn(async move {
@@ -75,18 +86,18 @@ async fn handle_websocket_connection(stream: TcpStream) {
                 val = ws_stream.next() => {
                     match val.unwrap() {
                         Ok(msg) => {
-                            info!("WS-RX: {:?}", msg);
+                            debug!("WS-RX: {:?}", msg);
+
                             // send the data to SSH!
                             if msg.is_text() || msg.is_binary() {
                                 let mbytes = msg.to_string();
-                                // ssh_channel.write_all(mbytes.as_slice()).await.unwrap();
-                                // ssh_channel.exec(false, mbytes).await.unwrap();
-                                match ssh_channel.exec(false, mbytes.clone()).await {
+
+                                match ssh_channel.exec(true, mbytes.clone()).await {
                                     Ok(_) => {
-                                        info!("SSH-TX: {:?}", mbytes);
+                                        info!("WS-TX: {:?}", mbytes);
                                     }
                                     Err(err) => {
-                                        error!("SSH-TX: {:?}", err);
+                                        error!("WS-TX: {:?}", err);
                                     }
                                 }
                             }
@@ -100,18 +111,10 @@ async fn handle_websocket_connection(stream: TcpStream) {
                         }
                     }
                 }
-                msg = async { 
-                    let m = ssh_channel.wait().await;
-                    // if it was None, then we need to wait a bit
-                    if ! m.is_some() {
-                        tokio::time::sleep(tokio::time::Duration::from_millis(10)).await;
-                    }
-                    m
-                } => {
+                msg = ssh_channel.wait() => {
                     match msg {
                         Some(msg) => {
                             info!("SSH-RX {:?}", msg);
-
                             match msg {
                                 russh::ChannelMsg::Data { ref data } => {
                                     let mut buf = Vec::new();
@@ -121,7 +124,7 @@ async fn handle_websocket_connection(stream: TcpStream) {
                                 }
                                 _ => {
                                     // debug it
-                                    debug!("SSH-RX {:?}", msg);
+                                    info!("SSH-RX {:?}", msg);
                                 }
                             }
                         }

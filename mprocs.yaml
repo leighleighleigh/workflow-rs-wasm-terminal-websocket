@@ -12,4 +12,4 @@ procs:
     shell: "bacon"
     cwd: "backend"
     env:
-      RUST_LOG: debug
+      RUST_LOG: info
