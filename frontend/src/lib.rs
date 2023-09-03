@@ -1,110 +1,43 @@
+use wasm_bindgen::convert::LongRefFromWasmAbi;
 use wasm_bindgen::prelude::*;
+use workflow_rs::wasm::prelude::ObjectTrait;
+use std::sync::mpsc;
 // use workflow_terminal::error::Error;
 //websocket imports
 use std::{sync::Arc, time::Duration};
 // use workflow_html::{Render,html};
 use async_trait::async_trait;
-use cfg_if::cfg_if;
 use std::sync::Mutex;
 
-use serde::{Deserialize, Serialize};
+// use serde::{Deserialize, Serialize};
 extern crate serde_json;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-struct CommandResult {
-    pub stdout: String,
-    pub exit_status: u32,
-}
-
+use workflow_log::*;
 use workflow_rs::core as workflow_core;
 use workflow_rs::log as workflow_log;
 use workflow_rs::terminal as workflow_terminal;
-use workflow_rs::websocket as workflow_websocket;
-
-use workflow_log::*;
 use workflow_terminal::{parse, Cli, Result as WResult, Terminal};
-use workflow_websocket::client::{ConnectOptions, Message, Options, WebSocket};
 
+#[wasm_bindgen]
 struct ExampleCli {
     term: Arc<Mutex<Option<Arc<Terminal>>>>,
-    ws: Arc<Mutex<Option<Arc<WebSocket>>>>,
 }
 
+#[wasm_bindgen]
 impl ExampleCli {
     fn new() -> Self {
         ExampleCli {
             term: Arc::new(Mutex::new(None)),
-            ws: Arc::new(Mutex::new(None)),
         }
     }
 
     fn term(&self) -> Option<Arc<Terminal>> {
         self.term.lock().unwrap().as_ref().cloned()
     }
-
-    fn ws(&self) -> Option<Arc<WebSocket>> {
-        self.ws.lock().unwrap().as_ref().cloned()
-    }
-
-    fn set_ws(&self, ws: Arc<WebSocket>) {
-        *self.ws.lock().unwrap() = Some(ws);
-    }
-
-    async fn disconnect(&self) {
-        // if it was open, close it
-        if let Some(ws) = self.ws() {
-            if ws.is_open() {
-                match ws.disconnect().await {
-                    Ok(_) => {
-                        log_info!("Disconnected from server");
-                    }
-                    Err(err) => {
-                        log_error!("Error disconnecting from server: {}", err);
-                    }
-                };
-            }
-        }
-
-        *self.ws.lock().unwrap() = None;
-    }
-
-    async fn connect(&self, ip: &str, port: u16) {
-        // if it was open, close it
-        self.disconnect().await;
-
-        // make a websocket connection
-        let ws: Option<WebSocket> =
-            match WebSocket::new(&format!("ws://{}:{}", ip, port), Options::default(), None) {
-                Ok(ws) => {
-                    log_info!("Websocket created");
-                    Some(ws)
-                }
-                Err(err) => {
-                    log_error!("Error creating websocket: {}", err);
-                    None
-                }
-            };
-
-        let ws: WebSocket = ws.unwrap();
-
-        match ws.connect(ConnectOptions::default()).await {
-            Ok(_) => {
-                log_info!("Connected to server");
-            }
-            Err(err) => {
-                log_error!("Error connecting to server: {}", err);
-            }
-        };
-
-        self.set_ws(Arc::new(ws));
-    }
 }
 
 impl Sink for ExampleCli {
     fn write(&self, _target: Option<&str>, _level: Level, args: &std::fmt::Arguments<'_>) -> bool {
-        // note, the terminal may not be initialized
-        // if workflow_log::pipe() is bound before the
-        // Terminal::init() is complete.
         if let Some(term) = self.term() {
             term.writeln(args.to_string());
             // true to disable further processing (no further output is made)
@@ -123,128 +56,20 @@ impl Cli for ExampleCli {
         Ok(())
     }
 
-    async fn digest(self: Arc<Self>, term: Arc<Terminal>, cmd: String) -> WResult<()> {
-        let argv = parse(&cmd);
-        match argv[0].as_str() {
-            "help" => {
-                let commands = vec![
-                    "help - this list",
-                    "hello - simple text output",
-                    "test - log_trace!() macro output",
-                    "history - list command history",
-                    "sleep - sleep for 5 seconds",
-                    "ask - ask user for text input (with echo)",
-                    "pass - ask user for password text input (no echo)",
-                    "connect <ip> <port> - connect to a websocket server",
-                    "disconnect - disconnect from websocket server",
-                    "send <message> - send a message to the websocket connection",
-                    "exit - exit terminal",
-                ];
-                term.writeln("\n\rCommands:\n\r");
-                term.writeln("\t".to_string() + &commands.join("\n\r\t") + "\n\r");
-            }
-            "hello" => {
-                term.writeln("hello back to you!");
-            }
-            "history" => {
-                let history = term.history();
-                for line in history.iter() {
-                    term.writeln(line);
-                }
-            }
-            "test" => {
-                log_trace!("log_trace!() macro test");
-            }
-            "sleep" => {
-                log_trace!("start sleep (5 sec)");
-                workflow_core::task::sleep(Duration::from_millis(5000)).await;
-                log_trace!("finish sleep");
-            }
-            "ask" => {
-                let text = term.ask(false, "Enter something:").await?;
-                log_info!("You have entered something: {}", text);
-            }
-            "pass" => {
-                let text = term.ask(true, "Enter something:").await?;
-                log_info!("You have entered something: {}", text);
-            }
-            "connect" => {
-                // get the ip and port to connect to
-                if argv.len() < 3 {
-                    log_error!("Please specify an ip and port to connect to");
-                    return Ok(());
-                }
-
-                // collect all the following arguments
-                let ip = argv[1].clone();
-                let port = argv[2].parse::<u16>().unwrap();
-
-                // connect!
-                self.connect(&ip, port).await;
-            }
-            "disconnect" => {
-                // clear the connection
-                self.disconnect().await;
-                return Ok(());
-            }
-            "send" => {
-                // get our websocket connection
-                let ws_ = match self.ws() {
-                    Some(ws) => ws,
-                    None => {
-                        log_error!("No websocket connection");
-                        return Ok(());
-                    }
-                };
-
-                // get the message to send
-                if argv.len() < 2 {
-                    log_error!("Please specify a message to send");
-                    return Ok(());
-                }
-
-                // collect all the following arguments
-                let msg = argv[1..].join(" ");
-
-                // send it!
-                match ws_.send(Message::Text(msg.clone())).await {
-                    Ok(_) => {
-                        log_info!("▷ {msg}");
-                    }
-                    Err(err) => {
-                        log_error!("Error sending message: {}", err);
-                    }
-                }
-            }
-            "exit" => {
-                term.writeln("bye!");
-                term.exit().await;
-            }
-            _ => return Err(format!("command not found: {cmd}").into()),
-        }
-
+    async fn digest(self: Arc<Self>, _term: Arc<Terminal>, cmd: String) -> WResult<()> {
+        // called when we have some input data to handle - triggered by Enter
+        try_call_on_input_callback(cmd);
         Ok(())
     }
 
-    async fn complete(
-        self: Arc<Self>,
-        _term: Arc<Terminal>,
-        cmd: String,
-    ) -> WResult<Option<Vec<String>>> {
+    async fn complete(self: Arc<Self>,_term: Arc<Terminal>,cmd: String,) -> WResult<Option<Vec<String>>> {
         let argv = parse(&cmd);
+
         if argv.is_empty() {
             return Ok(None);
         }
-        let last = argv.last().unwrap();
-        if last.starts_with('a') {
-            Ok(Some(vec![
-                "alpha".to_string(),
-                "aloha".to_string(),
-                "albatross".to_string(),
-            ]))
-        } else {
-            Ok(None)
-        }
+
+        Ok(None)
     }
 
     fn prompt(&self) -> Option<String> {
@@ -252,76 +77,96 @@ impl Cli for ExampleCli {
     }
 }
 
+
+pub fn try_call_on_input_callback(cmd : String) {
+    // see if the javascript side attached anything to the 
+    // wasmtty.fn_oninput variable.
+    // if so, call it as a function with a single string input.
+    // otherwise, print to console.
+    let tty = js_sys::Reflect::get(&JsValue::from(web_sys::window().unwrap()), &JsValue::from("wasmtty"));
+    match tty {
+        Ok(tty) => {
+            let cbfn = js_sys::Reflect::get(&tty,&JsValue::from("fn_oninput"));
+            match cbfn {
+                Ok(cb) => {
+                    let func : js_sys::Function = cb.into();
+                    let cmds : JsValue = cmd.into();
+                    let _ = func.call1(&JsValue::null(), &cmds);
+                },
+                Err(_) => {
+                    log_info!("No oninput callback found for wasmtty");
+                }
+            }
+        },
+        Err(_) => {
+            log_info!("No window.wasmtty found");
+        }
+    }
+}
+
+
+
+
 #[wasm_bindgen(start)]
 pub async fn main() -> Result<(), String> {
     console_error_panic_hook::set_once();
 
     // setup a terminal as a log sink
     let cli = Arc::new(ExampleCli::new());
-
-    // clone the cli sink, and move it into the task to create the terminal
     let cli_ = Arc::clone(&cli);
-    let term = Arc::new(Terminal::try_new(cli_, "$ ")?);
+    let term = Arc::new(Terminal::try_new(cli_, "")?);
+    // start terminal
     term.init().await?;
-
-    cfg_if! {
-        if #[cfg(not(feature = "hacking"))] {
-            term.writeln("Terminal example (type 'help' for list of commands)");
-        } else {
-            term.writeln("HACKER MODE ENGAGED (type 'help' for list of commands)");
-        }
-    }
+    term.writeln("Initialising Pyodide REPL...");
 
     // set logging and shot it in the terminal
-    workflow_log::pipe(Some(cli.clone()));
-    workflow_log::set_log_level(LevelFilter::Info);
-    log_info!("Logger initialized...");
+    // workflow_log::pipe(Some(cli.clone()));
+    // workflow_log::set_log_level(LevelFilter::Info);
 
-    // this loop will receive messages from the websocket, and log them
-    let ws_cli_ = Arc::clone(&cli);
+    // let _ = Arc::clone(&cli);
+    // workflow_core::task::spawn(async move {
+    // });
 
-    workflow_core::task::spawn(async move {
-        loop {
-            // try to clone the websocket
-            let ws_ = match ws_cli_.ws() {
-                Some(ws) => ws,
-                None => {
-                    // wait for the websocket to be created
-                    workflow_core::task::sleep(Duration::from_millis(100)).await;
-                    continue;
-                }
-            };
+    // make a closure for line writing
+    let tty_term = term.clone();
 
-            // wait for the websocket to connect
-            while !ws_.is_open() {
-                workflow_core::task::sleep(Duration::from_millis(100)).await;
-            }
-
-            loop {
-                // check if the websocket is still connected
-                if !ws_.is_open() {
-                    log_error!("Websocket disconnected");
-                    break;
-                }
-                let message: Message = ws_.recv().await.unwrap();
-
-                match message {
-                    Message::Text(_) => {
-                        let msg_bytes: Vec<u8> = message.into();
-                        let msg_str = String::from_utf8(msg_bytes).unwrap();
-                        // convert this string (JSON) into a CommandResult
-                        let result: CommandResult = serde_json::from_str(&msg_str).unwrap();
-                        log_info!("◁ {:?}", result);
-                    }
-                    _ => {
-                        log_debug!("◁ {:?}", message);
-                    }
-                }
-                // let msg_str = message.try_into().unwrap();
-                // log_info!("◁ {}", msg_str);
-            }
-        }
+    let tty_write = Closure::<dyn FnMut(String)>::new(move |m : String| {
+        tty_term.write(m);
     });
+
+    let tty_term2 = term.clone();
+    let tty_writeln = Closure::<dyn FnMut(String)>::new(move |m : String| {
+        tty_term2.writeln(m);
+    });
+
+    let tty_term3 = term.clone();
+    let tty_prompt= Closure::<dyn FnMut()>::new(move || {
+        // tty_term3.prompt();
+        tty_term3.refresh_prompt();
+    });
+
+    let tty_term4 = term.clone();
+    let tty_inject= Closure::<dyn FnMut(String)>::new(move |m : String| {
+        let _ = tty_term4.inject(m);
+    });
+
+    let tty_cli5 = term.clone();
+    let tty_set_prompt = Closure::<dyn FnMut(String)>::new(move |m : String| {
+        *tty_cli5.prompt.lock().unwrap() = m.clone();
+    });
+
+    // make a new object to store functions into
+    let events = js_sys::Object::new();
+    js_sys::Reflect::set(&events, &"fn_writeln".into(), tty_writeln.as_ref().unchecked_ref()).unwrap();
+    js_sys::Reflect::set(&events, &"fn_write".into(), tty_write.as_ref().unchecked_ref()).unwrap();
+    js_sys::Reflect::set(&events, &"fn_prompt".into(), tty_prompt.as_ref().unchecked_ref()).unwrap();
+    js_sys::Reflect::set(&events, &"fn_inject".into(), tty_inject.as_ref().unchecked_ref()).unwrap();
+    js_sys::Reflect::set(&events, &"fn_set_prompt".into(), tty_set_prompt .as_ref().unchecked_ref()).unwrap();
+    // clear
+    js_sys::Reflect::set(&JsValue::from(web_sys::window().unwrap()),&JsValue::from("wasmtty"),&JsValue::undefined()).unwrap();
+    // set
+    js_sys::Reflect::set(&JsValue::from(web_sys::window().unwrap()),&JsValue::from("wasmtty"),&events).unwrap();
+
 
     term.run().await?;
 

@@ -20,3 +20,4 @@ serde = { version = "1.0.178", default-features = false }
 
 # Custom fork of workflow-rs, where I'm hacking things up
 workflow-rs = { git = "https://github.com/leighleighleigh/workflow-rs", features = ["terminal", "wasm", "websocket", "log", "panic-hook"]}
+js-sys = "0.3.64"

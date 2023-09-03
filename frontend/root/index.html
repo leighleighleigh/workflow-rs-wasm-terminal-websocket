@@ -1,11 +1,94 @@
 <html>
-    <head>
-        <script type="module">
-            import * as workflow from './workflow-terminal/workflow-terminal.js';
-            (async () => {
-                const wasm = await workflow.default('./workflow-terminal/workflow-terminal_bg.wasm');
-            })();
-        </script>
-    </head>
-    <body></body>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+</head>
+
+<body>
+    <script type="module">
+        import * as workflow from './workflow-terminal/workflow-terminal.js';
+        (async () => {
+            // start it up!
+            const wasm = await workflow.default('./workflow-terminal/workflow-terminal_bg.wasm');
+
+            function prompt() {
+                try {
+                    window.wasmtty.fn_set_prompt(">> ");
+                    window.wasmtty.fn_prompt();
+                } catch(error) {
+                    console.log(error);
+                }
+            }
+
+            function writeToTTY(s) {
+                try {
+                    // add a new line, skipping the prompt
+                    // prompt will then follow
+                    // window.wasmtty.fn_inject(s + "\r\n");
+                    window.wasmtty.fn_set_prompt("");
+                    window.wasmtty.fn_write(s + "\r\n");
+                } catch(error) {
+                    console.log(error);
+                }
+            }
+
+            // init Pyodide
+            async function main() {
+                let pyodide = await loadPyodide();
+                setupHooks();
+                // hook the stdout handler
+                pyodide.setStdout({batched: writeToTTY});
+                pyodide.setStderr({batched: writeToTTY});
+                // write prompt
+                prompt();
+                // import micropip
+                writeToTTY("Loading micropip...");
+                pyodide.loadPackage('micropip');
+                prompt();
+                writeToTTY("Loading numpy...");
+                pyodide.loadPackage('numpy');
+                prompt();
+                return pyodide;
+            }
+            
+            let pyodideReadyPromise = main();
+
+            async function evaluatePython(code) {
+                let pyodide = await pyodideReadyPromise;
+
+                try {
+                    let output = pyodide.runPython(code);
+                    // stdout will be sent via the setStdout handler. 
+                    // to replicate REPL behaviour (echoing of variables), we also print anythign which isn't undefined
+                    if (output != undefined) {
+                        writeToTTY(output.toString());
+                    }
+                } catch (err) {
+                    // errors will still need to be sent here, however.
+                    writeToTTY(err);
+                }
+
+                prompt();
+            }
+
+            async function setupHooks(){
+                console.log("Setting up window.wasmtty.fn_oninput...");
+
+                async function gotInput(msg) {
+                    await evaluatePython(msg);
+                };
+
+                try {
+                    window.wasmtty.fn_oninput = gotInput;
+                } catch (error) {
+                    console.log("Error: window.wasmtty did not exist, retrying...");
+                    setTimeout(setupHooks, 100);
+                }
+            }
+
+
+        })();
+    </script>
+</body>
+
 </html>
